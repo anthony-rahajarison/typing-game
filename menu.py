@@ -1,6 +1,9 @@
 import pygame
+import random
+import FruitClass
 
 pygame.init()
+clock = pygame.time.Clock()
 
 # Page
 SCREEN_WIDTH = 1100
@@ -97,14 +100,51 @@ def display_difficulty():
     screen.blit(button_back, rect_button_back.topleft)
     pygame.display.update()
 
-def display_game():
-    screen.blit(background_blur,(0,0))  
-    screen.blit(button_back, rect_button_back.topleft)
-    pygame.display.update()
 
+# Jeu
+fruit_list = ["banana", "avocado", "strawberry", "pineapple", "lemon"]
+fruit_objects = []
+last_spawn_time = 0
+
+# Fruit key bindings
+fruit_keys = {
+    "banana": pygame.K_b,
+    "avocado": pygame.K_a,
+    "strawberry": pygame.K_s,
+    "pineapple": pygame.K_p,
+    "lemon": pygame.K_l,
+}
+
+def display_game(last_spawn_time):
+    screen.blit(background_blur, (0, 0))
+    screen.blit(button_back, rect_button_back.topleft)
+
+    now = pygame.time.get_ticks()
+    spawn_timer = 2500
+
+    # Spawn new fruit if enough time has passed
+    if now - last_spawn_time >= spawn_timer:
+        last_spawn_time = now
+        fruit_name = random.choice(fruit_list)
+        new_fruit = FruitClass.FruitClass(fruit_name)
+        fruit_objects.append(new_fruit)
+
+    # Draw all fruits from the list
+    for fruit in fruit_objects:
+        try:
+            surface_fruit = pygame.image.load(fruit.img)
+            surface_fruit = pygame.transform.scale(surface_fruit, (200, 200))
+            screen.blit(surface_fruit, fruit.position)
+        except:
+            pass
+
+    pygame.display.update()
+    return last_spawn_time
 
 running = True
 while running:
+    clock.tick(60)  # Frames per second
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -119,9 +159,16 @@ while running:
                     current_screen = "difficulty"
                 if rect_button_quit.collidepoint(event.pos):
                     running = False
-            elif current_screen in ["game","settings", "difficulty"]:
+            elif current_screen in ["game", "settings", "difficulty"]:
                 if rect_button_back.collidepoint(event.pos):
                     current_screen = "menu"
+
+        # Check for key press events to slice fruits
+        if current_screen == "game" and event.type == pygame.KEYDOWN:
+            for fruit in fruit_objects:
+                if event.key == fruit_keys.get(fruit.name, None):  # Check if key matches fruit
+                    
+                    fruit_objects.remove(fruit)
 
     if current_screen == "menu":
         display_main_menu()
@@ -130,6 +177,6 @@ while running:
     elif current_screen == "difficulty":
         display_difficulty()
     elif current_screen == "game":
-        display_game()
+        last_spawn_time = display_game(last_spawn_time)
 
 pygame.quit()
