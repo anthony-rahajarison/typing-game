@@ -2,6 +2,8 @@ import pygame
 import random
 import FruitClass
 
+score = 0
+
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -17,7 +19,7 @@ pygame.mixer.music.load(r"music.mp3")
 pygame.mixer.music.play(-1)  # Répète la musique en boucle
 
 # Police
-font = pygame.font.Font("Police.otf", 36)
+font = pygame.font.Font(None, 36)
 
 
 # Background
@@ -36,6 +38,12 @@ rect_button_play = button_play.get_rect(topleft=(100, 400))
 button_back = pygame.image.load(r"./images/buttons/button_back.png")
 button_back = pygame.transform.scale(button_back, (80, 80))
 rect_button_back = button_back.get_rect(topleft=(900, 80))
+button_back = pygame.image.load(r"./images/buttons/button_back.png")
+
+button_back_small = pygame.image.load(r"./images/buttons/button_back.png")
+button_back_small = pygame.transform.scale(button_back_small, (50, 50))
+rect_button_back_small = button_back_small.get_rect(topleft=(5, 5))
+
 
 button_settings = pygame.image.load(r"./images/buttons/button_settings.png")
 button_settings = pygame.transform.scale(button_settings, (300, 300))
@@ -52,7 +60,9 @@ rect_button_quit = button_quit.get_rect(topleft=(800, 400))
 background_blur = pygame.image.load(r"./images/background_blur.png")
 background_blur = pygame.transform.scale(background_blur,(1100, 800) )
 
-
+heart = pygame.image.load(r"./images/heart.png")
+heart = pygame.transform.scale(heart,(50,50))
+rect_heart = heart.get_rect(topleft=(1040,5))
 
 current_screen = "menu"  
 
@@ -117,7 +127,16 @@ fruit_keys = {
 
 def display_game(last_spawn_time):
     screen.blit(background_blur, (0, 0))
-    screen.blit(button_back, rect_button_back.topleft)
+    button_back_small = pygame.transform.scale(button_back, (50, 50))
+    rect_button_back_small = button_back_small.get_rect(topleft=(5, 5))
+    screen.blit(button_back_small,rect_button_back_small)
+    screen.blit(heart, (1040, 5)) 
+    screen.blit(heart, (980, 5))  
+    screen.blit(heart, (920, 5))   
+
+
+    text_score = font.render(f"score : {score}",True,(0,0,0))
+    screen.blit(text_score, (50, 50))
 
     now = pygame.time.get_ticks()
     spawn_timer = 2500
@@ -160,14 +179,14 @@ while running:
                 if rect_button_quit.collidepoint(event.pos):
                     running = False
             elif current_screen in ["game", "settings", "difficulty"]:
-                if rect_button_back.collidepoint(event.pos):
+                if rect_button_back.collidepoint(event.pos) or rect_button_back_small.collidepoint(event.pos):
                     current_screen = "menu"
 
         # Check for key press events to slice fruits
         if current_screen == "game" and event.type == pygame.KEYDOWN:
             for fruit in fruit_objects:
                 if event.key == fruit_keys.get(fruit.name, None):  # Check if key matches fruit
-                    
+                    score = score + 1
                     fruit_objects.remove(fruit)
 
     if current_screen == "menu":
