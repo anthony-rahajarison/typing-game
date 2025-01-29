@@ -3,9 +3,9 @@ import pygame
 pygame.init()
 
 # Page
-Screen_width = 1100
-Screen_height = 800
-ecran = pygame.display.set_mode((Screen_width, Screen_height))
+SCREEN_WIDTH = 1100
+SCREEN_HEIGHT = 800
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Slice Odyssey")
 
 # Play music
@@ -18,35 +18,35 @@ font = pygame.font.Font("Police.otf", 36)
 
 
 # Background
-background_image = pygame.image.load(r"fond_image.png")
+background_image = pygame.image.load(r"./images/background.png")
 background_image = pygame.transform.scale(background_image, (1100, 800))
 
 # Banner
-banner = pygame.image.load(r"logo_montagne.webp")
+banner = pygame.image.load(r"./images/logo.webp")
 banner = pygame.transform.scale(banner, (250, 250))
 
 # Boutons
-button_play = pygame.image.load(r"bouton_jouer.png")
+button_play = pygame.image.load(r"./images/buttons/button_play.png")
 button_play = pygame.transform.scale(button_play, (300, 300))
 rect_button_play = button_play.get_rect(topleft=(100, 400))
 
-button_back = pygame.image.load(r"back.png")
+button_back = pygame.image.load(r"./images/buttons/button_back.png")
 button_back = pygame.transform.scale(button_back, (80, 80))
 rect_button_back = button_back.get_rect(topleft=(900, 80))
 
-button_settings = pygame.image.load(r"bouton_options.png")
+button_settings = pygame.image.load(r"./images/buttons/button_settings.png")
 button_settings = pygame.transform.scale(button_settings, (300, 300))
 rect_button_settings = button_settings.get_rect(topleft=(350, 400))
 
-button_difficulty = pygame.image.load(r"bouton_difficulté.png")
+button_difficulty = pygame.image.load(r"./images/buttons/button_difficulty.png")
 button_difficulty = pygame.transform.scale(button_difficulty, (300, 300))
 rect_button_difficulty = button_difficulty.get_rect(topleft=(600, 400))
 
-button_quit = pygame.image.load(r"bouton_quitter.png")
+button_quit = pygame.image.load(r"./images/buttons/button_quit.png")
 button_quit = pygame.transform.scale(button_quit, (300, 300))
 rect_button_quit = button_quit.get_rect(topleft=(800, 400))
 
-background_blur = pygame.image.load(r"background_blur.png")
+background_blur = pygame.image.load(r"./images/background_blur.png")
 background_blur = pygame.transform.scale(background_blur,(1100, 800) )
 
 
@@ -55,51 +55,51 @@ current_screen = "menu"
 
 
 def display_main_menu():
-    ecran.blit(background_image, (0, 0))
-    ecran.blit(banner, (450, 50))
-    ecran.blit(button_play, rect_button_play.topleft)
+    screen.blit(background_image, (0, 0))
+    screen.blit(banner, (450, 50))
+    screen.blit(button_play, rect_button_play.topleft)
     
 
     if rect_button_play.collidepoint(pygame.mouse.get_pos()):
-        TextPolice = font.render("JOUER", True, (0, 0, 0))
-        ecran.blit(TextPolice, (530, 350))  
+        text_menu = font.render("JOUER", True, (0, 0, 0))
+        screen.blit(text_menu, (530, 350))  
 
     if rect_button_settings.collidepoint(pygame.mouse.get_pos()):
-        TextPolice = font.render("Options", True, (0, 0, 0))
-        ecran.blit(TextPolice, (530, 350))  
+        text_menu = font.render("Options", True, (0, 0, 0))
+        screen.blit(text_menu, (530, 350))  
 
     if rect_button_difficulty.collidepoint(pygame.mouse.get_pos()):
-        TextPolice = font.render("Difficultés", True, (0, 0, 0))
-        ecran.blit(TextPolice, (530, 350))  
+        text_menu = font.render("Difficultés", True, (0, 0, 0))
+        screen.blit(text_menu, (530, 350))  
 
     if rect_button_quit.collidepoint(pygame.mouse.get_pos()):
-        TextPolice = font.render("Quitter", True, (0, 0, 0))
-        ecran.blit(TextPolice, (530, 350))  
+        text_menu = font.render("Quitter", True, (0, 0, 0))
+        screen.blit(text_menu, (530, 350))  
     
     # Afficher les boutons
-    ecran.blit(button_settings, rect_button_settings)
-    ecran.blit(button_difficulty, rect_button_difficulty)
-    ecran.blit(button_quit, rect_button_quit)
+    screen.blit(button_settings, rect_button_settings)
+    screen.blit(button_difficulty, rect_button_difficulty)
+    screen.blit(button_quit, rect_button_quit)
     pygame.display.update()
 
 
 def display_settings_menu():
-    ecran.fill((163, 216, 244))
+    screen.fill((163, 216, 244))
     title_settings = font.render("Options du jeu", True, (0, 0, 0))
-    ecran.blit(title_settings, (450, 50))
-    ecran.blit(button_back, rect_button_back.topleft)
+    screen.blit(title_settings, (450, 50))
+    screen.blit(button_back, rect_button_back.topleft)
     pygame.display.update()
 
 def display_difficulty():
-    ecran.fill((163,216,244))
+    screen.fill((163,216,244))
     title_difficulty = font.render("Difficultés", True, (0, 0, 0))
-    ecran.blit(title_difficulty, (450, 50))
-    ecran.blit(button_back, rect_button_back.topleft)
+    screen.blit(title_difficulty, (450, 50))
+    screen.blit(button_back, rect_button_back.topleft)
     pygame.display.update()
 
 def display_game():
-    ecran.blit(background_blur,(0,0))  
-    ecran.blit(button_back, rect_button_back.topleft)
+    screen.blit(background_blur,(0,0))  
+    screen.blit(button_back, rect_button_back.topleft)
     pygame.display.update()
 
 
