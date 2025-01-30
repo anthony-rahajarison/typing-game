@@ -20,7 +20,8 @@ pygame.mixer.music.play(-1)  # Répète la musique en boucle
 
 # Police
 font = pygame.font.Font(None, 36)
-font_loose = pygame.font.Font(None,80)
+font_loose = pygame.font.Font(None,80),
+font_fruit_letter = pygame.font.Font(None, 80)
 
 
 # Background
@@ -164,6 +165,8 @@ def display_game(last_spawn_time):
             surface_fruit = pygame.image.load(fruit.img)
             surface_fruit = pygame.transform.scale(surface_fruit, (200, 200))
             screen.blit(surface_fruit, fruit.position)
+            key_text = font_fruit_letter.render(fruit.letter , True, (255, 164, 55))
+            screen.blit(key_text, (fruit.position[0] + 75, fruit.position[1] + 75))
         except:
             pass
 
@@ -201,13 +204,13 @@ while running:
         # Check for key press events to slice fruits
         if current_screen == "game" and event.type == pygame.KEYDOWN:
             for fruit in fruit_objects:
-                if event.key == fruit_keys.get(fruit.name, None):  
+                if event.key == fruit.key :
                     if fruit.name == "bomb":
                         fruit_objects.clear()  
                         message_loose()  
                         pygame.display.update()
                         pygame.time.delay(2000)  
-                        current_screen = "menu"  
+                        current_screen = "menu"
                         break
                     else: 
                         score = score + 1
