@@ -46,10 +46,32 @@ button_back_small = pygame.image.load(r"./images/buttons/button_back.png")
 button_back_small = pygame.transform.scale(button_back_small, (50, 50))
 rect_button_back_small = button_back_small.get_rect(topleft=(5, 5))
 
+image_combo = pygame.image.load(r"./images/combo.png")
+image_combo = pygame.transform.scale(image_combo, (200, 200))
 
 button_settings = pygame.image.load(r"./images/buttons/button_settings.png")
 button_settings = pygame.transform.scale(button_settings, (300, 300))
 rect_button_settings = button_settings.get_rect(topleft=(350, 400))
+
+
+
+button_difficulty1 = pygame.image.load(r"./images/buttons/difficulty1.png")
+button_difficulty1 = pygame.transform.scale(button_difficulty1, (800, 400))
+rect_button_difficulty1 = button_difficulty1.get_rect(topleft=(170, 100))
+
+
+
+button_difficulty2 = pygame.image.load(r"./images/buttons/difficulty2.png")
+button_difficulty2 = pygame.transform.scale(button_difficulty2, (800, 400))
+rect_button_difficulty2 = button_difficulty2.get_rect(topleft=(170, 250))
+
+
+
+button_difficulty3 = pygame.image.load(r"./images/buttons/difficulty3.png")
+button_difficulty3 = pygame.transform.scale(button_difficulty3, (800, 400))
+rect_button_difficulty3 = button_difficulty3.get_rect(topleft=(170, 400))
+
+
 
 button_difficulty = pygame.image.load(r"./images/buttons/button_difficulty.png")
 button_difficulty = pygame.transform.scale(button_difficulty, (300, 300))
@@ -77,6 +99,8 @@ def sound_design_sword():
 
 current_screen = "menu"  
 
+def combo():
+    screen.blit(image_combo,(600,400))
 
 def display_main_menu():
     screen.blit(background_image, (0, 0))
@@ -117,7 +141,10 @@ def display_settings_menu():
 def display_difficulty():
     screen.fill((163,216,244))
     title_difficulty = font.render("Difficultés", True, (0, 0, 0))
-    screen.blit(title_difficulty, (450, 50))
+    screen.blit(button_difficulty1,rect_button_difficulty1)
+    screen.blit(button_difficulty2,rect_button_difficulty2)
+    screen.blit(button_difficulty3,rect_button_difficulty3)
+    screen.blit(title_difficulty, (500, 50))
     screen.blit(button_back, rect_button_back.topleft)
     pygame.display.update()
 
