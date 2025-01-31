@@ -15,7 +15,7 @@ pygame.display.set_caption("Slice Odyssey")
 # Play music
 pygame.mixer.init()
 pygame.mixer.music.load(r"music.mp3")
-pygame.mixer.music.play(-1)  # Répète la musique en boucle
+pygame.mixer.music.play(-1)  # Loops music
 
 # Police
 font = pygame.font.Font(None, 36)
@@ -62,7 +62,7 @@ background_blur = pygame.transform.scale(background_blur,(1100, 800) )
 
 
 
-
+# Puts the game on main menu when program is started
 current_screen = "menu"  
 
 
