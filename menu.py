@@ -3,6 +3,7 @@ import random
 import FruitClass
 
 score = 0
+life = 3
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -61,9 +62,8 @@ rect_button_quit = button_quit.get_rect(topleft=(800, 400))
 background_blur = pygame.image.load(r"./images/background_blur.png")
 background_blur = pygame.transform.scale(background_blur,(1100, 800) )
 
-heart = pygame.image.load(r"./images/heart.png")
-heart = pygame.transform.scale(heart,(50,50))
-rect_heart = heart.get_rect(topleft=(1040,5))
+
+
 
 current_screen = "menu"  
 
@@ -120,14 +120,14 @@ spawn_duration = 2000
 
 # Fruit key bindings
 
-def display_game(last_spawn_time):
+def display_game(last_spawn_time, life):
     screen.blit(background_blur, (0, 0))
     button_back_small = pygame.transform.scale(button_back, (50, 50))
     rect_button_back_small = button_back_small.get_rect(topleft=(5, 5))
     screen.blit(button_back_small, rect_button_back_small)
-    screen.blit(heart, (1040, 5)) 
-    screen.blit(heart, (980, 5))  
-    screen.blit(heart, (920, 5))   
+    heart = pygame.image.load(r"./images/lives/" + str(life) + "heart.png")
+    heart = pygame.transform.scale(heart,(400,200))
+    screen.blit(heart, (800,-50))
 
     text_score = font.render(f"score : {score}", True, (0, 0, 0))
     screen.blit(text_score, (50, 50))
@@ -147,8 +147,10 @@ def display_game(last_spawn_time):
     for fruit in fruit_objects:
         if now - fruit.spawn_time < spawn_duration:
             new_fruit_objects.append(fruit)
-
-    fruit_objects[:] = new_fruit_objects  # Met à jour la liste
+        else:
+            life = life - 1 
+                
+    fruit_objects[:] = new_fruit_objects  
 
 
 
@@ -163,7 +165,7 @@ def display_game(last_spawn_time):
             pass
 
     pygame.display.update()
-    return last_spawn_time
+    return last_spawn_time, life
 
 
 
@@ -216,6 +218,14 @@ while running:
     elif current_screen == "difficulty":
         display_difficulty()
     elif current_screen == "game":
-        last_spawn_time = display_game(last_spawn_time)
+        last_spawn_time, life = display_game(last_spawn_time, life)
+        if life == 0 :
+            display_game(last_spawn_time, life)
+            fruit_objects.clear()  
+            message_loose()  
+            pygame.display.update()
+            pygame.time.delay(2000)  
+            current_screen = "menu" 
+            break
 
 pygame.quit()
