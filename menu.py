@@ -20,7 +20,7 @@ pygame.mixer.music.play(-1)  # Répète la musique en boucle
 
 # Police
 font = pygame.font.Font(None, 36)
-font_loose = pygame.font.Font(None,80),
+font_loose = pygame.font.Font(None,80)
 font_fruit_letter = pygame.font.Font(None, 80)
 
 
@@ -119,14 +119,6 @@ last_spawn_time = 0
 spawn_duration = 2000
 
 # Fruit key bindings
-fruit_keys = {
-    "banana": pygame.K_b,
-    "avocado": pygame.K_a,
-    "strawberry": pygame.K_s,
-    "pineapple": pygame.K_p,
-    "lemon": pygame.K_l,
-    "bomb": pygame.K_v,
-}
 
 def display_game(last_spawn_time):
     screen.blit(background_blur, (0, 0))
