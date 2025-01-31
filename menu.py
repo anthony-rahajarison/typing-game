@@ -62,7 +62,17 @@ rect_button_quit = button_quit.get_rect(topleft=(800, 400))
 background_blur = pygame.image.load(r"./images/background_blur.png")
 background_blur = pygame.transform.scale(background_blur,(1100, 800) )
 
+def sound_design_ice():
+    pygame.mixer.music.load(r"sound_design/ice.mp3")
+    pygame.mixer.music.play(0)
 
+def sound_design_bomb():
+    pygame.mixer.music.load(r"sound_design/bomb.mp3")
+    pygame.mixer.music.play(0)
+
+def sound_design_sword():
+    pygame.mixer.music.load(r"sound_design/sword_sound.mp3")
+    pygame.mixer.music.play(0)
 
 
 current_screen = "menu"  
@@ -206,7 +216,9 @@ while running:
         if current_screen == "game" and event.type == pygame.KEYDOWN:
             for fruit in fruit_objects:
                 if event.key == fruit.key :
+                    sound_design_sword()
                     if fruit.name == "bomb":
+                        sound_design_bomb()
                         fruit_objects.clear()  
                         message_loose()  
                         pygame.display.update()
@@ -214,8 +226,9 @@ while running:
                         current_screen = "menu"
                         break
                     elif fruit.name == "ice" :
+                        sound_design_ice()
                         freeze_time = pygame.time.get_ticks() + freeze_duration
-                    else: 
+                    else:
                         score = score + 1
                         fruit_objects.remove(fruit)
                 
