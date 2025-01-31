@@ -2,8 +2,6 @@ import pygame
 import random
 import FruitClass
 
-score = 0
-life = 3
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -112,13 +110,13 @@ def display_difficulty():
     pygame.display.update()
 
 
-# Jeu
+# Game Variables
 fruit_list = ["banana", "avocado", "strawberry", "pineapple", "lemon","bomb","ice"]
 fruit_objects = []
 last_spawn_time = 0
 spawn_duration = 2000
-
-# Fruit key bindings
+score = 0
+life = 3
 
 def display_game(last_spawn_time, life):
     """Game loop"""
