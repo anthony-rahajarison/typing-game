@@ -121,6 +121,7 @@ spawn_duration = 2000
 # Fruit key bindings
 
 def display_game(last_spawn_time, life):
+    """Game loop"""
     screen.blit(background_blur, (0, 0))
     button_back_small = pygame.transform.scale(button_back, (50, 50))
     rect_button_back_small = button_back_small.get_rect(topleft=(5, 5))
@@ -135,9 +136,9 @@ def display_game(last_spawn_time, life):
     now = pygame.time.get_ticks()
     spawn_timer = 2500
 
-    if now < freeze_time:
-        pygame.display.update()
-        return last_spawn_time, life
+    # if now < freeze_time:
+    #     pygame.display.update()
+    #     return last_spawn_time, life
 
     # Spawn new fruit if enough time has passed
     if now - last_spawn_time >= spawn_timer:
@@ -151,7 +152,7 @@ def display_game(last_spawn_time, life):
     for fruit in fruit_objects:
         if now - fruit.spawn_time < spawn_duration:
             new_fruit_objects.append(fruit)
-        elif not fruit.name == "bomb":
+        elif fruit.name != "bomb" and fruit.name != "ice":
             life = life - 1 
                 
     fruit_objects[:] = new_fruit_objects  
@@ -177,8 +178,8 @@ def message_loose():
     text_loose = font_loose.render("Perdu", True, (0, 0, 0))  
     screen.blit(text_loose, (460, 300))  
 
-freeze_time = 0  # Stocke le moment où le temps est gelé
-freeze_duration = 3000  # 3 secondes en millisecondes
+freeze_time = 0  # Stores time when freeze starts
+freeze_duration = 3000
 
 running = True
 while running:
@@ -214,8 +215,9 @@ while running:
                         current_screen = "menu"
                         break
                     elif fruit.name == "ice" :
-                        freeze_time = pygame.time.get_ticks() + freeze_duration
-                    else: 
+                        freeze_time = pygame.time.get_ticks() + freeze_duration # Freezes time
+                        fruit_objects.remove(fruit)
+                    else:
                         score = score + 1
                         fruit_objects.remove(fruit)
                 
@@ -228,13 +230,12 @@ while running:
         display_difficulty()
     elif current_screen == "game":
         last_spawn_time, life = display_game(last_spawn_time, life)
-        if life == 0 :
+        if life == 0 : # Game Over
             display_game(last_spawn_time, life)
-            fruit_objects.clear()  
-            message_loose()  
+            fruit_objects.clear() # Clears screen
+            message_loose()
             pygame.display.update()
-            pygame.time.delay(2000)  
-            current_screen = "menu" 
-            break
+            pygame.time.delay(2000)
+            current_screen = "menu"
 
 pygame.quit()
