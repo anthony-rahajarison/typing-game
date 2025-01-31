@@ -20,6 +20,8 @@ pygame.mixer.music.play(-1)  # Répète la musique en boucle
 
 # Police
 font = pygame.font.Font(None, 36)
+font_loose = pygame.font.Font(None,80),
+font_fruit_letter = pygame.font.Font(None, 80)
 
 
 # Background
@@ -38,7 +40,6 @@ rect_button_play = button_play.get_rect(topleft=(100, 400))
 button_back = pygame.image.load(r"./images/buttons/button_back.png")
 button_back = pygame.transform.scale(button_back, (80, 80))
 rect_button_back = button_back.get_rect(topleft=(900, 80))
-button_back = pygame.image.load(r"./images/buttons/button_back.png")
 
 button_back_small = pygame.image.load(r"./images/buttons/button_back.png")
 button_back_small = pygame.transform.scale(button_back_small, (50, 50))
@@ -112,9 +113,10 @@ def display_difficulty():
 
 
 # Jeu
-fruit_list = ["banana", "avocado", "strawberry", "pineapple", "lemon"]
+fruit_list = ["banana", "avocado", "strawberry", "pineapple", "lemon","bomb"]
 fruit_objects = []
 last_spawn_time = 0
+spawn_duration = 2000
 
 # Fruit key bindings
 fruit_keys = {
@@ -123,19 +125,19 @@ fruit_keys = {
     "strawberry": pygame.K_s,
     "pineapple": pygame.K_p,
     "lemon": pygame.K_l,
+    "bomb": pygame.K_v,
 }
 
 def display_game(last_spawn_time):
     screen.blit(background_blur, (0, 0))
     button_back_small = pygame.transform.scale(button_back, (50, 50))
     rect_button_back_small = button_back_small.get_rect(topleft=(5, 5))
-    screen.blit(button_back_small,rect_button_back_small)
+    screen.blit(button_back_small, rect_button_back_small)
     screen.blit(heart, (1040, 5)) 
     screen.blit(heart, (980, 5))  
     screen.blit(heart, (920, 5))   
 
-
-    text_score = font.render(f"score : {score}",True,(0,0,0))
+    text_score = font.render(f"score : {score}", True, (0, 0, 0))
     screen.blit(text_score, (50, 50))
 
     now = pygame.time.get_ticks()
@@ -146,19 +148,36 @@ def display_game(last_spawn_time):
         last_spawn_time = now
         fruit_name = random.choice(fruit_list)
         new_fruit = FruitClass.FruitClass(fruit_name)
+        new_fruit.spawn_time = now 
         fruit_objects.append(new_fruit)
 
-    # Draw all fruits from the list
+    new_fruit_objects = []
+    for fruit in fruit_objects:
+        if now - fruit.spawn_time < spawn_duration:
+            new_fruit_objects.append(fruit)
+
+    fruit_objects[:] = new_fruit_objects  # Met à jour la liste
+
+
+
     for fruit in fruit_objects:
         try:
             surface_fruit = pygame.image.load(fruit.img)
             surface_fruit = pygame.transform.scale(surface_fruit, (200, 200))
             screen.blit(surface_fruit, fruit.position)
+            key_text = font_fruit_letter.render(fruit.letter , True, (255, 164, 55))
+            screen.blit(key_text, (fruit.position[0] + 75, fruit.position[1] + 75))
         except:
             pass
 
     pygame.display.update()
     return last_spawn_time
+
+
+
+def message_loose():
+    text_loose = font_loose.render("Perdu", True, (0, 0, 0))  
+    screen.blit(text_loose, (460, 300))  
 
 running = True
 while running:
@@ -185,9 +204,18 @@ while running:
         # Check for key press events to slice fruits
         if current_screen == "game" and event.type == pygame.KEYDOWN:
             for fruit in fruit_objects:
-                if event.key == fruit_keys.get(fruit.name, None):  # Check if key matches fruit
-                    score = score + 1
-                    fruit_objects.remove(fruit)
+                if event.key == fruit.key :
+                    if fruit.name == "bomb":
+                        fruit_objects.clear()  
+                        message_loose()  
+                        pygame.display.update()
+                        pygame.time.delay(2000)  
+                        current_screen = "menu"
+                        break
+                    else: 
+                        score = score + 1
+                        fruit_objects.remove(fruit)
+                
 
     if current_screen == "menu":
         display_main_menu()
