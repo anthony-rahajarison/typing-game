@@ -2,7 +2,6 @@ import pygame
 import random
 import FruitClass
 
-score = 0
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -16,7 +15,7 @@ pygame.display.set_caption("Slice Odyssey")
 # Play music
 pygame.mixer.init()
 pygame.mixer.music.load(r"music.mp3")
-pygame.mixer.music.play(-1)  # Répète la musique en boucle
+pygame.mixer.music.play(-1)  # Loops music
 
 # Police
 font = pygame.font.Font(None, 36)
@@ -61,10 +60,9 @@ rect_button_quit = button_quit.get_rect(topleft=(800, 400))
 background_blur = pygame.image.load(r"./images/background_blur.png")
 background_blur = pygame.transform.scale(background_blur,(1100, 800) )
 
-heart = pygame.image.load(r"./images/heart.png")
-heart = pygame.transform.scale(heart,(50,50))
-rect_heart = heart.get_rect(topleft=(1040,5))
 
+
+# Puts the game on main menu when program is started
 current_screen = "menu"  
 
 
@@ -90,7 +88,7 @@ def display_main_menu():
         text_menu = font.render("Quitter", True, (0, 0, 0))
         screen.blit(text_menu, (530, 350))  
     
-    # Afficher les boutons
+    # Display buttons
     screen.blit(button_settings, rect_button_settings)
     screen.blit(button_difficulty, rect_button_difficulty)
     screen.blit(button_quit, rect_button_quit)
@@ -112,28 +110,33 @@ def display_difficulty():
     pygame.display.update()
 
 
-# Jeu
-fruit_list = ["banana", "avocado", "strawberry", "pineapple", "lemon","bomb"]
+# Game Variables
+fruit_list = ["banana", "avocado", "strawberry", "pineapple", "lemon","bomb","ice"]
 fruit_objects = []
 last_spawn_time = 0
 spawn_duration = 2000
+score = 0
+life = 3
 
-# Fruit key bindings
-
-def display_game(last_spawn_time):
+def display_game(last_spawn_time, life):
+    """Game loop"""
     screen.blit(background_blur, (0, 0))
     button_back_small = pygame.transform.scale(button_back, (50, 50))
     rect_button_back_small = button_back_small.get_rect(topleft=(5, 5))
     screen.blit(button_back_small, rect_button_back_small)
-    screen.blit(heart, (1040, 5)) 
-    screen.blit(heart, (980, 5))  
-    screen.blit(heart, (920, 5))   
+    heart = pygame.image.load(r"./images/lives/" + str(life) + "heart.png")
+    heart = pygame.transform.scale(heart,(400,200))
+    screen.blit(heart, (800,-50))
 
     text_score = font.render(f"score : {score}", True, (0, 0, 0))
     screen.blit(text_score, (50, 50))
 
     now = pygame.time.get_ticks()
     spawn_timer = 2500
+
+    # if now < freeze_time:
+    #     pygame.display.update()
+    #     return last_spawn_time, life
 
     # Spawn new fruit if enough time has passed
     if now - last_spawn_time >= spawn_timer:
@@ -147,8 +150,10 @@ def display_game(last_spawn_time):
     for fruit in fruit_objects:
         if now - fruit.spawn_time < spawn_duration:
             new_fruit_objects.append(fruit)
-
-    fruit_objects[:] = new_fruit_objects  # Met à jour la liste
+        elif fruit.name != "bomb" and fruit.name != "ice":
+            life = life - 1 
+                
+    fruit_objects[:] = new_fruit_objects  
 
 
 
@@ -163,13 +168,16 @@ def display_game(last_spawn_time):
             pass
 
     pygame.display.update()
-    return last_spawn_time
+    return last_spawn_time, life
 
 
 
 def message_loose():
     text_loose = font_loose.render("Perdu", True, (0, 0, 0))  
     screen.blit(text_loose, (460, 300))  
+
+freeze_time = 0  # Stores time when freeze starts
+freeze_duration = 3000
 
 running = True
 while running:
@@ -204,7 +212,10 @@ while running:
                         pygame.time.delay(2000)  
                         current_screen = "menu"
                         break
-                    else: 
+                    elif fruit.name == "ice" :
+                        freeze_time = pygame.time.get_ticks() + freeze_duration # Freezes time
+                        fruit_objects.remove(fruit)
+                    else:
                         score = score + 1
                         fruit_objects.remove(fruit)
                 
@@ -216,6 +227,13 @@ while running:
     elif current_screen == "difficulty":
         display_difficulty()
     elif current_screen == "game":
-        last_spawn_time = display_game(last_spawn_time)
+        last_spawn_time, life = display_game(last_spawn_time, life)
+        if life == 0 : # Game Over
+            display_game(last_spawn_time, life)
+            fruit_objects.clear() # Clears screen
+            message_loose()
+            pygame.display.update()
+            pygame.time.delay(2000)
+            current_screen = "menu"
 
 pygame.quit()
