@@ -88,7 +88,7 @@ def display_main_menu():
         text_menu = font.render("Quitter", True, (0, 0, 0))
         screen.blit(text_menu, (530, 350))  
     
-    # Afficher les boutons
+    # Display buttons
     screen.blit(button_settings, rect_button_settings)
     screen.blit(button_difficulty, rect_button_difficulty)
     screen.blit(button_quit, rect_button_quit)
