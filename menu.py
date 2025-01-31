@@ -47,9 +47,9 @@ rect_button_back_small = button_back_small.get_rect(topleft=(5, 5))
 image_combo = pygame.image.load(r"./images/combo.png")
 image_combo = pygame.transform.scale(image_combo, (200, 200))
 
-button_settings = pygame.image.load(r"./images/buttons/button_settings.png")
-button_settings = pygame.transform.scale(button_settings, (300, 300))
-rect_button_settings = button_settings.get_rect(topleft=(350, 400))
+button_Leaderboard = pygame.image.load(r"./images/buttons/button_Score.png")
+button_Leaderboard = pygame.transform.scale(button_Leaderboard, (300, 300))
+rect_button_Leaderboard = button_Leaderboard.get_rect(topleft=(350, 400))
 
 
 
@@ -107,23 +107,23 @@ def display_main_menu():
     
 
     if rect_button_play.collidepoint(pygame.mouse.get_pos()):
-        text_menu = font.render("JOUER", True, (0, 0, 0))
-        screen.blit(text_menu, (530, 350))  
+        font_menu = font.render("JOUER", True, (0, 0, 0))
+        screen.blit(font_menu, (530, 350))  
 
-    if rect_button_settings.collidepoint(pygame.mouse.get_pos()):
-        text_menu = font.render("Options", True, (0, 0, 0))
-        screen.blit(text_menu, (530, 350))  
+    if rect_button_Leaderboard.collidepoint(pygame.mouse.get_pos()):
+        font_menu = font.render("Tableau Des Scores", True, (0, 0, 0))
+        screen.blit(font_menu, (470, 350))  
 
     if rect_button_difficulty.collidepoint(pygame.mouse.get_pos()):
-        text_menu = font.render("Difficultés", True, (0, 0, 0))
-        screen.blit(text_menu, (530, 350))  
+        font_menu = font.render("Difficultés", True, (0, 0, 0))
+        screen.blit(font_menu, (530, 350))  
 
     if rect_button_quit.collidepoint(pygame.mouse.get_pos()):
-        text_menu = font.render("Quitter", True, (0, 0, 0))
-        screen.blit(text_menu, (530, 350))  
+        font_menu = font.render("Quitter", True, (0, 0, 0))
+        screen.blit(font_menu, (530, 350))  
     
     # Display buttons
-    screen.blit(button_settings, rect_button_settings)
+    screen.blit(button_Leaderboard, rect_button_Leaderboard)
     screen.blit(button_difficulty, rect_button_difficulty)
     screen.blit(button_quit, rect_button_quit)
     pygame.display.update()
@@ -153,6 +153,7 @@ fruit_objects = []
 last_spawn_time = 0
 spawn_duration = 2000
 score = 0
+spawn_timer = random.randint(1000, 2000)
 
 
 def display_game(last_spawn_time, lives):
@@ -169,7 +170,7 @@ def display_game(last_spawn_time, lives):
     screen.blit(text_score, (50, 50))
 
     now = pygame.time.get_ticks()
-    spawn_timer = random.randint(500, 2000)
+    
 
     # if now < freeze_time:
     #     pygame.display.update()
@@ -261,7 +262,15 @@ while running:
                     else:
                         score = score + 1
                         fruit_objects.remove(fruit)
-                
+        if current_screen == "difficulty" :
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if rect_button_difficulty1.collidepoint(event.pos):
+                    spawn_timer = random.randint(1500, 2000)
+                if rect_button_difficulty2.collidepoint(event.pos):
+                    spawn_timer = random.randint(1000, 2000)
+                if rect_button_difficulty3.collidepoint(event.pos):
+                    spawn_timer = random.randint(500, 900)
+                    
 
     if current_screen == "menu":
         display_main_menu()
