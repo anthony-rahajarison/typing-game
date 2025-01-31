@@ -113,7 +113,7 @@ def display_difficulty():
 
 
 # Jeu
-fruit_list = ["banana", "avocado", "strawberry", "pineapple", "lemon","bomb"]
+fruit_list = ["banana", "avocado", "strawberry", "pineapple", "lemon","bomb","ice"]
 fruit_objects = []
 last_spawn_time = 0
 spawn_duration = 2000
@@ -135,6 +135,10 @@ def display_game(last_spawn_time, life):
     now = pygame.time.get_ticks()
     spawn_timer = 2500
 
+    if now < freeze_time:
+        pygame.display.update()
+        return last_spawn_time, life
+
     # Spawn new fruit if enough time has passed
     if now - last_spawn_time >= spawn_timer:
         last_spawn_time = now
@@ -147,7 +151,7 @@ def display_game(last_spawn_time, life):
     for fruit in fruit_objects:
         if now - fruit.spawn_time < spawn_duration:
             new_fruit_objects.append(fruit)
-        else:
+        elif not fruit.name == "bomb":
             life = life - 1 
                 
     fruit_objects[:] = new_fruit_objects  
@@ -172,6 +176,9 @@ def display_game(last_spawn_time, life):
 def message_loose():
     text_loose = font_loose.render("Perdu", True, (0, 0, 0))  
     screen.blit(text_loose, (460, 300))  
+
+freeze_time = 0  # Stocke le moment où le temps est gelé
+freeze_duration = 3000  # 3 secondes en millisecondes
 
 running = True
 while running:
@@ -206,6 +213,8 @@ while running:
                         pygame.time.delay(2000)  
                         current_screen = "menu"
                         break
+                    elif fruit.name == "ice" :
+                        freeze_time = pygame.time.get_ticks() + freeze_duration
                     else: 
                         score = score + 1
                         fruit_objects.remove(fruit)
