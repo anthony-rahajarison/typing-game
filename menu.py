@@ -116,15 +116,15 @@ fruit_objects = []
 last_spawn_time = 0
 spawn_duration = 2000
 score = 0
-life = 3
 
-def display_game(last_spawn_time, life):
+
+def display_game(last_spawn_time, lives):
     """Game loop"""
     screen.blit(background_blur, (0, 0))
     button_back_small = pygame.transform.scale(button_back, (50, 50))
     rect_button_back_small = button_back_small.get_rect(topleft=(5, 5))
     screen.blit(button_back_small, rect_button_back_small)
-    heart = pygame.image.load(r"./images/lives/" + str(life) + "heart.png")
+    heart = pygame.image.load(r"./images/lives/" + str(lives) + "heart.png")
     heart = pygame.transform.scale(heart,(400,200))
     screen.blit(heart, (800,-50))
 
@@ -132,11 +132,11 @@ def display_game(last_spawn_time, life):
     screen.blit(text_score, (50, 50))
 
     now = pygame.time.get_ticks()
-    spawn_timer = 2500
+    spawn_timer = random.randint(500, 2000)
 
     # if now < freeze_time:
     #     pygame.display.update()
-    #     return last_spawn_time, life
+    #     return last_spawn_time, lives
 
     # Spawn new fruit if enough time has passed
     if now - last_spawn_time >= spawn_timer:
@@ -151,7 +151,7 @@ def display_game(last_spawn_time, life):
         if now - fruit.spawn_time < spawn_duration:
             new_fruit_objects.append(fruit)
         elif fruit.name != "bomb" and fruit.name != "ice":
-            life = life - 1 
+            lives = lives - 1 
                 
     fruit_objects[:] = new_fruit_objects  
 
@@ -161,14 +161,16 @@ def display_game(last_spawn_time, life):
         try:
             surface_fruit = pygame.image.load(fruit.img)
             surface_fruit = pygame.transform.scale(surface_fruit, (200, 200))
-            screen.blit(surface_fruit, fruit.position)
-            key_text = font_fruit_letter.render(fruit.letter , True, (255, 164, 55))
-            screen.blit(key_text, (fruit.position[0] + 75, fruit.position[1] + 75))
+            screen.blit(surface_fruit, (fruit.x, fruit.y))
+            key_text = font_fruit_letter.render(fruit.letter , True, (255,255,255))
+            screen.blit(key_text, (fruit.x + 75, fruit.y + 10))
+            fruit.move()
         except:
             pass
 
+    
     pygame.display.update()
-    return last_spawn_time, life
+    return last_spawn_time, lives
 
 
 
@@ -190,6 +192,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if current_screen == "menu":
                 if rect_button_play.collidepoint(event.pos):
+                    lives = 3
                     current_screen = "game"
                 if rect_button_settings.collidepoint(event.pos):
                     current_screen = "settings"
@@ -227,9 +230,9 @@ while running:
     elif current_screen == "difficulty":
         display_difficulty()
     elif current_screen == "game":
-        last_spawn_time, life = display_game(last_spawn_time, life)
-        if life == 0 : # Game Over
-            display_game(last_spawn_time, life)
+        last_spawn_time, lives = display_game(last_spawn_time, lives)
+        if lives == 0 : # Game Over
+            display_game(last_spawn_time, lives)
             fruit_objects.clear() # Clears screen
             message_loose()
             pygame.display.update()

@@ -1,6 +1,7 @@
 import random
 import pygame
 import string
+import math
 
 
 class FruitClass :
@@ -37,6 +38,19 @@ class FruitClass :
 
         self.name = name
         self.img = "images/fruits/" + name + ".png"
-        self.position = (random.randint(200,900), random.randint(200, 600))
+        self.x = random.randint(200,300)
+        self.y = 700
+        self.x_speed = random.randint(2, 5)
+        self.y_speed = -15
 
         self.letter, self.key = random.choice(list(key_list.items()))
+    
+    def move(self):
+
+        self.x += self.x_speed
+
+        if self.y <= 100:
+            self.y_speed = abs(self.y_speed) 
+
+        self.y += self.y_speed
+        
