@@ -232,7 +232,7 @@ while running:
                 if rect_button_play.collidepoint(event.pos):
                     lives = 3
                     current_screen = "game"
-                if rect_button_settings.collidepoint(event.pos):
+                if rect_button_Leaderboard.collidepoint(event.pos):
                     current_screen = "settings"
                 if rect_button_difficulty.collidepoint(event.pos):
                     current_screen = "difficulty"
