@@ -1,6 +1,8 @@
 import pygame
 import random
 import FruitClass
+import json
+from textbox import TextBox
 
 
 pygame.init()
@@ -51,25 +53,17 @@ button_Leaderboard = pygame.image.load(r"./images/buttons/button_Score.png")
 button_Leaderboard = pygame.transform.scale(button_Leaderboard, (300, 300))
 rect_button_Leaderboard = button_Leaderboard.get_rect(topleft=(350, 400))
 
-
-
 button_difficulty1 = pygame.image.load(r"./images/buttons/difficulty1.png")
 button_difficulty1 = pygame.transform.scale(button_difficulty1, (800, 400))
 rect_button_difficulty1 = button_difficulty1.get_rect(topleft=(170, 100))
-
-
 
 button_difficulty2 = pygame.image.load(r"./images/buttons/difficulty2.png")
 button_difficulty2 = pygame.transform.scale(button_difficulty2, (800, 400))
 rect_button_difficulty2 = button_difficulty2.get_rect(topleft=(170, 250))
 
-
-
 button_difficulty3 = pygame.image.load(r"./images/buttons/difficulty3.png")
 button_difficulty3 = pygame.transform.scale(button_difficulty3, (800, 400))
 rect_button_difficulty3 = button_difficulty3.get_rect(topleft=(170, 400))
-
-
 
 button_difficulty = pygame.image.load(r"./images/buttons/button_difficulty.png")
 button_difficulty = pygame.transform.scale(button_difficulty, (300, 300))
@@ -79,6 +73,7 @@ button_quit = pygame.image.load(r"./images/buttons/button_quit.png")
 button_quit = pygame.transform.scale(button_quit, (300, 300))
 rect_button_quit = button_quit.get_rect(topleft=(800, 400))
 
+# Background image
 background_blur = pygame.image.load(r"./images/background_blur.png")
 background_blur = pygame.transform.scale(background_blur,(1100, 800) )
 
@@ -129,10 +124,10 @@ def display_main_menu():
     pygame.display.update()
 
 
-def display_settings_menu():
+def display_leaderboard_menu():
     screen.fill((163, 216, 244))
-    title_settings = font.render("Options du jeu", True, (0, 0, 0))
-    screen.blit(title_settings, (450, 50))
+    title_leaderboard = font.render("Tableau des scores", True, (0, 0, 0))
+    screen.blit(title_leaderboard, (450, 50))
     screen.blit(button_back, rect_button_back.topleft)
     pygame.display.update()
 
@@ -154,6 +149,7 @@ last_spawn_time = 0
 spawn_duration = 2000
 score = 0
 spawn_timer = random.randint(1000, 2000)
+textbox = TextBox(50, 80, 400, 40)
 
 
 def display_game(last_spawn_time, lives):
@@ -172,9 +168,9 @@ def display_game(last_spawn_time, lives):
     now = pygame.time.get_ticks()
     
 
-    # if now < freeze_time:
-    #     pygame.display.update()
-    #     return last_spawn_time, lives
+    if now < freeze_time:
+        pygame.display.update()
+        return last_spawn_time, lives
 
     # Spawn new fruit if enough time has passed
     if now - last_spawn_time >= spawn_timer:
@@ -211,10 +207,58 @@ def display_game(last_spawn_time, lives):
     return last_spawn_time, lives
 
 
+# Score
 
-def message_loose():
+def load_score():
+    """Loads scores from scores.json"""
+    try:
+        with open("scores.json", "r") as openfile:
+            return json.load(openfile)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}  # Returns an empty dictionary if file is not found
+
+def write_score(score_dictionnary):
+    """Écrit les scores dans le fichier JSON"""
+    with open("scores.json", "w") as outfile:
+        json.dump(score_dictionnary, outfile, indent=4)
+
+def game_over_text():
     text_loose = font_loose.render("Perdu", True, (0, 0, 0))  
     screen.blit(text_loose, (460, 300))  
+
+def defeat(score):
+    """Asks the players name and resets game"""
+    score_dictionnary = load_score()
+    display_game(last_spawn_time, lives)
+    fruit_objects.clear() # Clears screen
+    game_over_text()
+    pygame.display.update()
+    
+    textbox = TextBox(400, 400, 300, 50)  # Position et taille
+    entering_name = True
+
+    while entering_name:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                entering_name = False
+                running = False
+            
+            player_name = textbox.handle_event(event)
+            if player_name:  # If return is pressed with text in textbox
+                entering_name = False  # Quits text box menu
+                score_dictionnary[player_name] = score
+
+        screen.blit(background_blur, (0, 0))
+        game_over_text()
+        textbox.draw(screen)
+        pygame.display.update()
+    
+    json_object = json.dumps(score_dictionnary, indent=4)
+    write_score(score_dictionnary)
+
+    pygame.time.delay(1000)
+    return "menu"
+
 
 freeze_time = 0  # Stores time when freeze starts
 freeze_duration = 3000
@@ -231,14 +275,16 @@ while running:
             if current_screen == "menu":
                 if rect_button_play.collidepoint(event.pos):
                     lives = 3
+                    score = 0
+                    fruit_objects.clear()
                     current_screen = "game"
                 if rect_button_Leaderboard.collidepoint(event.pos):
-                    current_screen = "settings"
+                    current_screen = "leaderboard"
                 if rect_button_difficulty.collidepoint(event.pos):
                     current_screen = "difficulty"
                 if rect_button_quit.collidepoint(event.pos):
                     running = False
-            elif current_screen in ["game", "settings", "difficulty"]:
+            elif current_screen in ["game", "leaderboard", "difficulty"]:
                 if rect_button_back.collidepoint(event.pos) or rect_button_back_small.collidepoint(event.pos):
                     current_screen = "menu"
 
@@ -249,11 +295,7 @@ while running:
                     sound_design_sword()
                     if fruit.name == "bomb":
                         sound_design_bomb()
-                        fruit_objects.clear()  
-                        message_loose()  
-                        pygame.display.update()
-                        pygame.time.delay(2000)  
-                        current_screen = "menu"
+                        current_screen = defeat(score)
                         break
                     elif fruit.name == "ice" :
                         sound_design_ice()
@@ -274,18 +316,13 @@ while running:
 
     if current_screen == "menu":
         display_main_menu()
-    elif current_screen == "settings":
-        display_settings_menu()
+    elif current_screen == "leaderboard":
+        display_leaderboard_menu()
     elif current_screen == "difficulty":
         display_difficulty()
     elif current_screen == "game":
         last_spawn_time, lives = display_game(last_spawn_time, lives)
         if lives == 0 : # Game Over
-            display_game(last_spawn_time, lives)
-            fruit_objects.clear() # Clears screen
-            message_loose()
-            pygame.display.update()
-            pygame.time.delay(2000)
-            current_screen = "menu"
+            current_screen = defeat(score)
 
 pygame.quit()
