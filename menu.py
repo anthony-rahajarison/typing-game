@@ -187,11 +187,10 @@ def display_game(last_spawn_time, lives):
 
     new_fruit_objects = []
     for fruit in fruit_objects:
-        # Ne supprime pas les fruits pendant le gel, donc on les garde même si leur temps est expiré
         if now - fruit.spawn_time < spawn_duration:
             new_fruit_objects.append(fruit)
         elif fruit.name != "bomb" and fruit.name != "ice":
-            if now >= freeze_time: 
+            if now >= freeze_time: # Keeps you from losing health while time freeze bonus
                 lives = lives - 1 
 
     fruit_objects[:] = new_fruit_objects  
@@ -203,8 +202,8 @@ def display_game(last_spawn_time, lives):
             screen.blit(surface_fruit, (fruit.x, fruit.y))
             key_text = font_fruit_letter.render(fruit.letter , True, (255,255,255))
             screen.blit(key_text, (fruit.x + 75, fruit.y + 10))
-            # Ne pas déplacer les fruits pendant le gel
-            if now >= freeze_time:  # Seuls les fruits peuvent se déplacer si le gel est terminé
+
+            if now >= freeze_time:  # Fruits can move only when freeze time is off
                 fruit.move()
         except:
             pass
@@ -226,7 +225,7 @@ def load_score():
         return {}  # Returns an empty dictionary if file is not found
 
 def write_score(score_dictionnary):
-    """Écrit les scores dans le fichier JSON"""
+    """Writes scores in scores.json"""
     with open("scores.json", "w") as outfile:
         json.dump(score_dictionnary, outfile, indent=4)
 
