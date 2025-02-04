@@ -33,6 +33,11 @@ background_image = pygame.transform.scale(background_image, (1100, 800))
 banner = pygame.image.load(r"./images/logo.webp")
 banner = pygame.transform.scale(banner, (250, 250))
 
+#combo
+combo = pygame.image.load(r"./images/combo.png")
+combo = pygame.transform.scale(combo, (300, 300))
+
+
 # Boutons
 button_play = pygame.image.load(r"./images/buttons/button_play.png")
 button_play = pygame.transform.scale(button_play, (300, 300))
@@ -93,7 +98,7 @@ def sound_design_sword():
 current_screen = "menu"  
 
 def combo():
-    screen.blit(image_combo,(600,400))
+    screen.blit(combo,(600,400))
 
 def display_main_menu():
     screen.blit(background_image, (0, 0))
@@ -151,6 +156,9 @@ score = 0
 spawn_timer = random.randint(1000, 2000)
 textbox = TextBox(50, 80, 400, 40)
 
+# added variable for combos
+sliced_fruits = []
+
 
 def display_game(last_spawn_time, lives):
     """Game loop"""
@@ -166,11 +174,8 @@ def display_game(last_spawn_time, lives):
     screen.blit(text_score, (50, 50))
 
     now = pygame.time.get_ticks()
-    
 
-    if now < freeze_time:
-        pygame.display.update()
-        return last_spawn_time, lives
+
 
     # Spawn new fruit if enough time has passed
     if now - last_spawn_time >= spawn_timer:
@@ -182,14 +187,14 @@ def display_game(last_spawn_time, lives):
 
     new_fruit_objects = []
     for fruit in fruit_objects:
+        # Ne supprime pas les fruits pendant le gel, donc on les garde même si leur temps est expiré
         if now - fruit.spawn_time < spawn_duration:
             new_fruit_objects.append(fruit)
         elif fruit.name != "bomb" and fruit.name != "ice":
-            lives = lives - 1 
-                
+            if now >= freeze_time: 
+                lives = lives - 1 
+
     fruit_objects[:] = new_fruit_objects  
-
-
 
     for fruit in fruit_objects:
         try:
@@ -198,13 +203,16 @@ def display_game(last_spawn_time, lives):
             screen.blit(surface_fruit, (fruit.x, fruit.y))
             key_text = font_fruit_letter.render(fruit.letter , True, (255,255,255))
             screen.blit(key_text, (fruit.x + 75, fruit.y + 10))
-            fruit.move()
+            # Ne pas déplacer les fruits pendant le gel
+            if now >= freeze_time:  # Seuls les fruits peuvent se déplacer si le gel est terminé
+                fruit.move()
         except:
             pass
 
-    
     pygame.display.update()
     return last_spawn_time, lives
+
+
 
 
 # Score
@@ -304,6 +312,13 @@ while running:
                     else:
                         score = score + 1
                         fruit_objects.remove(fruit)
+
+                        if sliced_fruits.count(fruit.letter) == 2:  
+                            score += 3  
+                            combo()  
+                            pygame.display.update()
+                            pygame.time.delay(1000)
+
         if current_screen == "difficulty" :
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if rect_button_difficulty1.collidepoint(event.pos):
