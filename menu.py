@@ -129,6 +129,15 @@ def display_leaderboard_menu():
     title_leaderboard = font.render("Tableau des scores", True, (0, 0, 0))
     screen.blit(title_leaderboard, (450, 50))
     screen.blit(button_back, rect_button_back.topleft)
+
+    # Display scores
+    y_offset = 150
+    for key, value in loaded_score.items():
+        text = f"{key}: {value}"
+        score_text = font.render(text, True, (0,0,0))
+        screen.blit(score_text, (SCREEN_WIDTH // 2 - score_text.get_width() // 2, y_offset))
+        y_offset += 50  # Space between scores
+        
     pygame.display.update()
 
 def display_difficulty():
@@ -280,6 +289,7 @@ while running:
                     current_screen = "game"
                 if rect_button_Leaderboard.collidepoint(event.pos):
                     current_screen = "leaderboard"
+                    loaded_score = load_score()
                 if rect_button_difficulty.collidepoint(event.pos):
                     current_screen = "difficulty"
                 if rect_button_quit.collidepoint(event.pos):
