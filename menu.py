@@ -93,7 +93,7 @@ def sound_design_sword():
 current_screen = "menu"  
 
 def combo():
-    screen.blit(image_combo,(600,400))
+    screen.blit(combo,(600,400))
 
 def display_main_menu():
     screen.blit(background_image, (0, 0))
@@ -160,6 +160,9 @@ score = 0
 spawn_timer = random.randint(1000, 2000)
 textbox = TextBox(50, 80, 400, 40)
 
+# added variable for combos
+sliced_fruits = []
+
 
 def display_game(last_spawn_time, lives):
     """Game loop"""
@@ -175,11 +178,8 @@ def display_game(last_spawn_time, lives):
     screen.blit(text_score, (50, 50))
 
     now = pygame.time.get_ticks()
-    
 
-    if now < freeze_time:
-        pygame.display.update()
-        return last_spawn_time, lives
+
 
     # Spawn new fruit if enough time has passed
     if now - last_spawn_time >= spawn_timer:
@@ -194,11 +194,10 @@ def display_game(last_spawn_time, lives):
         if now - fruit.spawn_time < spawn_duration:
             new_fruit_objects.append(fruit)
         elif fruit.name != "bomb" and fruit.name != "ice":
-            lives = lives - 1 
-                
+            if now >= freeze_time: # Keeps you from losing health while time freeze bonus
+                lives = lives - 1 
+
     fruit_objects[:] = new_fruit_objects  
-
-
 
     for fruit in fruit_objects:
         try:
@@ -207,13 +206,16 @@ def display_game(last_spawn_time, lives):
             screen.blit(surface_fruit, (fruit.x, fruit.y))
             key_text = font_fruit_letter.render(fruit.letter , True, (255,255,255))
             screen.blit(key_text, (fruit.x + 75, fruit.y + 10))
-            fruit.move()
+
+            if now >= freeze_time:  # Fruits can move only when freeze time is off
+                fruit.move()
         except:
             pass
 
-    
     pygame.display.update()
     return last_spawn_time, lives
+
+
 
 
 # Score
@@ -227,7 +229,7 @@ def load_score():
         return {}  # Returns an empty dictionary if file is not found
 
 def write_score(score_dictionnary):
-    """Écrit les scores dans le fichier JSON"""
+    """Writes scores in scores.json"""
     with open("scores.json", "w") as outfile:
         json.dump(score_dictionnary, outfile, indent=4)
 
@@ -314,6 +316,13 @@ while running:
                     else:
                         score = score + 1
                         fruit_objects.remove(fruit)
+
+                        if sliced_fruits.count(fruit.letter) == 2:  
+                            score += 3  
+                            combo()  
+                            pygame.display.update()
+                            pygame.time.delay(1000)
+
         if current_screen == "difficulty" :
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if rect_button_difficulty1.collidepoint(event.pos):
