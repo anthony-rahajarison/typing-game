@@ -16,12 +16,12 @@ class TextBox:
             self.color = self.color_active if self.active else self.color_inactive
         if event.type == pygame.KEYDOWN and self.active:
             if event.key == pygame.K_RETURN:
-                return self.text  # Retourne la valeur saisie
+                return self.text  # Return name entered
             elif event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
             else:
                 self.text += event.unicode
-        return None  # Aucun texte validé
+        return None  # Return nothing
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect, 2)

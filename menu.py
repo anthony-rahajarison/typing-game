@@ -19,7 +19,7 @@ pygame.mixer.init()
 pygame.mixer.music.load(r"music.mp3")
 pygame.mixer.music.play(-1)  # Loops music
 
-# Police
+# Fonts
 font = pygame.font.Font(None, 36)
 font_loose = pygame.font.Font(None,80)
 font_fruit_letter = pygame.font.Font(None, 80)
@@ -33,7 +33,7 @@ background_image = pygame.transform.scale(background_image, (1100, 800))
 banner = pygame.image.load(r"./images/logo.webp")
 banner = pygame.transform.scale(banner, (250, 250))
 
-# Boutons
+# Buttons
 button_play = pygame.image.load(r"./images/buttons/button_play.png")
 button_play = pygame.transform.scale(button_play, (300, 300))
 rect_button_play = button_play.get_rect(topleft=(100, 400))
@@ -243,7 +243,7 @@ def defeat(score):
     game_over_text()
     pygame.display.update()
     
-    textbox = TextBox(400, 400, 300, 50)  # Position et taille
+    textbox = TextBox(400, 400, 300, 50)
     entering_name = True
 
     while entering_name:
